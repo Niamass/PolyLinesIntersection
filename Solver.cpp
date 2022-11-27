@@ -1,6 +1,6 @@
 #include "Solver.h"
 
-Line::Line(int _a, int _b, int _c)
+Line::Line(long long _a, long long _b, long long _c)
 {
 	if (_b < 0)
 	{
@@ -18,7 +18,7 @@ Line::Line(int _a, int _b, int _c)
 
 
 // "расстояние", может быть отрицательным
-int Line::getValue(Point point) const
+long long Line::getValue(Point point) const
 {
 	return a * point.x + b * point.y + c;
 }
@@ -28,7 +28,7 @@ Solver::Solver(const std::vector<Point>& _polygon)
 {
 	// Определение границ "верхней" и "нижней" частей многоугольника
 	polygon = _polygon;
-	int max = polygon[0].x, min = polygon[0].x;
+	long long max = polygon[0].x, min = polygon[0].x;
 	int i_max = 0, i_min = 0;
 	for (int i = 0; i < polygon.size(); i++)
 	{
@@ -64,9 +64,9 @@ int Solver::TernarySearchMin(const Line & line, int start, int finish) const
 			finish = m2;
 	}
 
-	int val_start = line.getValue(polygon[start % N]);
-	int val_med = line.getValue(polygon[(start + 1) % N]);
-	int val_finish = line.getValue(polygon[finish % N]);
+	auto val_start = line.getValue(polygon[start % N]);
+	auto val_med = line.getValue(polygon[(start + 1) % N]);
+	auto val_finish = line.getValue(polygon[finish % N]);
 	if (val_start <= val_med)
 		if (val_start <= val_finish)
 			return start % N;
@@ -93,9 +93,9 @@ int Solver::TernarySearchMax(const Line & line, int start, int finish) const
 			finish = m2;
 	}
 	
-	int val_start = line.getValue(polygon[start % N]);
-	int val_med = line.getValue(polygon[(start + 1) % N]);
-	int val_finish = line.getValue(polygon[finish % N]);
+	auto val_start = line.getValue(polygon[start % N]);
+	auto val_med = line.getValue(polygon[(start + 1) % N]);
+	auto val_finish = line.getValue(polygon[finish % N]);
 	if (val_start >= val_med)
 		if (val_start >= val_finish)
 			return start % N;
@@ -109,9 +109,10 @@ int Solver::TernarySearchMax(const Line & line, int start, int finish) const
 std::vector<int> Solver:: BinarySearch(const Line & line, int start, int finish) const
 {
 	std::vector<int> answer;
-	int med, val_med, N = polygon.size();
-	int val_start = line.getValue(polygon[start]);
-	int val_finish = line.getValue(polygon[finish]);
+	int med, N = polygon.size();
+	long long val_med;
+	auto val_start = line.getValue(polygon[start]);
+	auto val_finish = line.getValue(polygon[finish]);
 	if (start > finish)
 		finish = N + finish;
 
@@ -143,20 +144,20 @@ std::vector<int> Solver:: BinarySearch(const Line & line, int start, int finish)
 
 std::vector<int> Solver::isIntersect(const Line & line) const
 {	
-	int max, min, N = polygon.size();
+	int i_max, i_min, N = polygon.size();
 	std::vector<int> answer;
 	
-	max = TernarySearchMax(line, i_right, i_left); //индекс точки с максимумом расстояния в "верхней" части
-	min = TernarySearchMin(line, i_left, i_right); //индекс точки с минимумом расстояния в "нижней" части
+	i_max = TernarySearchMax(line, i_right, i_left); //индекс точки с максимумом расстояния в "верхней" части
+	i_min = TernarySearchMin(line, i_left, i_right); //индекс точки с минимумом расстояния в "нижней" части
 
-	int val_max = line.getValue(polygon[max]);
-	int val_min = line.getValue(polygon[min]);
+	auto val_max = line.getValue(polygon[i_max]);
+	auto val_min = line.getValue(polygon[i_min]);
 
 	if (val_max * val_min < 0)
 	{	
 		//случай пересечения
-		auto ans1 = BinarySearch(line, max, min);// пересечение в "левой" части
-		auto ans2 = BinarySearch(line, min, max);// пересечение в "правой" части
+		auto ans1 = BinarySearch(line, i_max, i_min);// пересечение в "левой" части
+		auto ans2 = BinarySearch(line, i_min, i_max);// пересечение в "правой" части
 		if (ans1.size() < ans2.size())
 		{
 			ans2.insert(ans2.end(), ans1.begin(), ans1.end());
@@ -171,20 +172,20 @@ std::vector<int> Solver::isIntersect(const Line & line) const
 	else if (val_max == 0)
 	{
 		//случай касания
-		answer.push_back(max);
-		if (line.getValue(polygon[(max + 1) % N]) == 0)
-			answer.push_back((max + 1) % N);
-		else if (line.getValue(polygon[(max + N - 1) % N]) == 0)
-			answer.push_back((max + N - 1) % N);
+		answer.push_back(i_max);
+		if (line.getValue(polygon[(i_max + 1) % N]) == 0)
+			answer.push_back((i_max + 1) % N);
+		else if (line.getValue(polygon[(i_max + N - 1) % N]) == 0)
+			answer.push_back((i_max + N - 1) % N);
 	}
 	else if (val_min == 0)
 	{
 		//случай касания
-		answer.push_back(min);
-		if (line.getValue(polygon[(min + 1) % N]) == 0)
-			answer.push_back((min + 1) % N);
-		else if (line.getValue(polygon[(min + N - 1) % N]) == 0)
-			answer.push_back((min + N - 1) % N);
+		answer.push_back(i_min);
+		if (line.getValue(polygon[(i_min + 1) % N]) == 0)
+			answer.push_back((i_min + 1) % N);
+		else if (line.getValue(polygon[(i_min + N - 1) % N]) == 0)
+			answer.push_back((i_min + N - 1) % N);
 	}
 
 	return answer;

@@ -4,7 +4,7 @@
 
 struct Point 
 {
-	int x, y;
+	long long x, y;
 };
 
 
@@ -12,11 +12,11 @@ struct Point
 class Line 
 {
 private:
-	int a, b, c;
+	long long a, b, c;
 public:
 	Line() {};
-	Line(int _a, int _b, int _c);
-	int getValue(Point) const;
+	Line(long long _a, long long _b, long long _c);
+	long long getValue(Point) const;
 };
 
 class Solver 
