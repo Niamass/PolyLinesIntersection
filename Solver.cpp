@@ -120,12 +120,12 @@ std::vector<int> Solver:: BinarySearch(const Line & line, int start, int finish)
 	{
 		med = (start + finish) / 2;
 		val_med = line.getValue(polygon[med % N]);
-		if (val_med * val_start < 0)
+		if (val_med < 0 && val_start > 0 || val_med > 0 && val_start < 0)
 		{
 			finish = med;
 			val_finish = val_med;
 		}
-		else if (val_med * val_finish < 0)
+		else if (val_med < 0 && val_finish > 0 || val_med > 0 && val_finish < 0)
 		{
 			start = med;
 			val_start = val_med;
@@ -153,7 +153,7 @@ std::vector<int> Solver::isIntersect(const Line & line) const
 	auto val_max = line.getValue(polygon[i_max]);
 	auto val_min = line.getValue(polygon[i_min]);
 
-	if (val_max * val_min < 0)
+	if (val_max < 0 && val_min > 0 || val_max > 0 && val_min < 0)
 	{	
 		//случай пересечения
 		auto ans1 = BinarySearch(line, i_max, i_min);// пересечение в "левой" части
